@@ -1,0 +1,20 @@
+import fitz
+
+
+def func(doc):
+    for i in range(len(doc)):
+        imglist = doc.getPageImageList(i)
+        for j, img in enumerate(imglist):
+            xref = img[0]
+            pix = fitz.Pixmap(doc, xref)   # make pixmap from image
+            if pix.n - pix.alpha < 4:      # can be saved as PNG
+                pix.writePNG("p%s-%s.png" % (i+1, j+1))
+            else:                          # CMYK: must convert first
+                pix0 = fitz.Pixmap(fitz.csRGB, pix)
+                pix0.writePNG("p%s-%s.png" % (i+1, j+1))
+                pix0 = None                # free Pixmap resources
+            pix = None                     # free Pixmap resources
+
+
+if __name__ == "__main__":
+    func(doc=fitz.open('D://huawenqihuo.pdf'))         # input the path of pdf file
